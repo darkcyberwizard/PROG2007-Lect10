@@ -1,4 +1,4 @@
-# PROG2007 Lecture 10: Privacy, Permissions and Security (demo app)
+# PROG2007 Lecture 10: Privacy, Permissions and Security 
 
 Code for Lecture 10 of PROG2007 Mobile Programming. One Android app, three tabs, one tab per live demo. All the app code is in a single file, `MainActivity.kt`, so you can read it top to bottom.
 
