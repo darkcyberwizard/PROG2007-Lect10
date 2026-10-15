@@ -216,6 +216,7 @@ Logcat filter: `tag:RouteService`
 4. Tap a third time: no dialog appears. Android has stopped asking. The request log says "no dialog: Android answered at once".
 5. Go to **Settings > Apps > this app > Permissions > Location** and choose **Allow only while using the app**. Return to the app (Android may restart it).
 6. Tap **Start tracking**. It records. On the emulator, set a location or play a route in **Extended controls (three dots) > Location**, or no fix arrives.
+7. Tap Attach photo to pick an image with the system photo picker. No permission dialog appears, because the app only receives the photo you choose.
 
 Optional: repeat with **Only this time** and leave the app. When you come back, tracking has stopped.
 
