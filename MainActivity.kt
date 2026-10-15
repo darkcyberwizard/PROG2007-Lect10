@@ -18,6 +18,7 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Arrangement
@@ -508,7 +509,7 @@ class DemoViewModel(app: Application) : AndroidViewModel(app) {
                 info == null -> "No cleanup has run yet"
                 info.state == WorkInfo.State.SUCCEEDED ->
                     "Cleanup SUCCEEDED: removed ${info.outputData.getInt(CleanupWorker.OUT_POINTS, 0)} " +
-                            "route points and ${info.outputData.getInt(CleanupWorker.OUT_NOTES, 0)} notes"
+                        "route points and ${info.outputData.getInt(CleanupWorker.OUT_NOTES, 0)} notes"
                 else -> "Cleanup ${info.state}"
             }
         }
@@ -519,8 +520,8 @@ class DemoViewModel(app: Application) : AndroidViewModel(app) {
         .map { list ->
             list.any {
                 it.state == WorkInfo.State.ENQUEUED ||
-                        it.state == WorkInfo.State.RUNNING ||
-                        it.state == WorkInfo.State.BLOCKED
+                    it.state == WorkInfo.State.RUNNING ||
+                    it.state == WorkInfo.State.BLOCKED
             }
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
@@ -778,6 +779,12 @@ fun PermissionsTab(vm: DemoViewModel) {
     var address by rememberSaveable { mutableStateOf("") }
     var noteText by rememberSaveable { mutableStateOf("") }
 
+    // Photo picker: the system shows the photos, we receive only the one the user picks.
+    var photoUri by rememberSaveable { mutableStateOf<String?>(null) }
+    val pickPhoto = rememberLauncherForActivityResult(
+        ActivityResultContracts.PickVisualMedia()
+    ) { uri -> photoUri = uri?.toString() }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -822,6 +829,14 @@ fun PermissionsTab(vm: DemoViewModel) {
                 enabled = !tracking
             ) { Text("Start tracking") }
             OutlinedButton(onClick = { vm.stopTracking() }, enabled = tracking) { Text("Stop tracking") }
+        }
+
+        SectionCard("Photo without a permission") {
+            Text("The system photo screen opens. The app receives only the photo you pick.")
+            OutlinedButton(onClick = {
+                pickPhoto.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+            }) { Text("Attach photo") }
+            Mono(photoUri ?: "(no photo chosen)")
         }
 
         SectionCard("Route recorded") {
@@ -913,7 +928,7 @@ fun StorageTab(vm: DemoViewModel) {
         }
         Text(
             "run-as works only on debug builds. A thief needs a rooted phone, a backup or a forensic tool instead. " +
-                    "The point is the same: whoever gets the file gets the token, unless the file is encrypted with a key that stays in the Keystore.",
+                "The point is the same: whoever gets the file gets the token, unless the file is encrypted with a key that stays in the Keystore.",
             style = MaterialTheme.typography.bodySmall
         )
         Spacer(Modifier.height(24.dp))
@@ -972,7 +987,7 @@ fun MyDataTab(vm: DemoViewModel) {
             SectionCard("The exported file: my-data.json") {
                 Mono(
                     preview.take(1500) +
-                            if (preview.length > 1500) "\n... (${preview.length} characters in total)" else ""
+                        if (preview.length > 1500) "\n... (${preview.length} characters in total)" else ""
                 )
             }
         }
